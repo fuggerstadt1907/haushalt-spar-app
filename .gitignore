@@ -1,0 +1,28 @@
+# Echte Bankdaten – niemals committen
+fixtures/private/
+
+# Secrets
+.env
+.env*.local
+!.env.example
+
+# Dependencies & Build
+node_modules/
+.next/
+out/
+build/
+coverage/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
+
+# Supabase CLI (lokaler Zustand)
+supabase/.branches/
+supabase/.temp/
+
+# Debug
+npm-debug.log*
+
+# System
+.DS_Store
+*.pem
