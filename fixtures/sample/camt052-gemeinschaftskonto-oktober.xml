@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.08">
+  <BkToCstmrAcctRpt>
+    <GrpHdr><MsgId>SAMPLE</MsgId><CreDtTm>2026-10-12T12:00:00+01:00</CreDtTm></GrpHdr>
+    <Rpt>
+      <Id>SAMPLE-RPT</Id>
+      <CreDtTm>2026-10-12T12:00:00+01:00</CreDtTm>
+      <FrToDt><FrDtTm>2026-10-10T00:00:00+01:00</FrDtTm><ToDtTm>2026-10-12T23:59:59+01:00</ToDtTm></FrToDt>
+      <Acct><Id><IBAN>DE75000000000000000002</IBAN></Id><Ccy>EUR</Ccy></Acct>
+      <Ntry>
+        <Amt Ccy="EUR">200.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-10</Dt></BookgDt>
+        <ValDt><Dt>2026-10-10</Dt></ValDt>
+        <AcctSvcrRef>REF-1</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">200.00</Amt>
+            <RltdPties><Dbtr><Pty><Nm>Gehaltskonto</Nm></Pty></Dbtr><DbtrAcct><Id><IBAN>DE02000000000000000001</IBAN></Id></DbtrAcct></RltdPties>
+            <RmtInf><Ustrd>Haushaltsgeld</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">143.20</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-12</Dt></BookgDt>
+        <ValDt><Dt>2026-10-12</Dt></ValDt>
+        <AcctSvcrRef>REF-2</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">143.20</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Drogerie Beispiel</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kartenzahlung girocard</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+    </Rpt>
+  </BkToCstmrAcctRpt>
+</Document>

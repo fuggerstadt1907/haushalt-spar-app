@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.08">
+  <BkToCstmrAcctRpt>
+    <GrpHdr><MsgId>SAMPLE</MsgId><CreDtTm>2026-11-15T12:00:00+01:00</CreDtTm></GrpHdr>
+    <Rpt>
+      <Id>SAMPLE-RPT</Id>
+      <CreDtTm>2026-11-15T12:00:00+01:00</CreDtTm>
+      <FrToDt><FrDtTm>2026-10-16T00:00:00+01:00</FrDtTm><ToDtTm>2026-11-15T23:59:59+01:00</ToDtTm></FrToDt>
+      <Acct><Id><IBAN>DE02000000000000000001</IBAN></Id><Ccy>EUR</Ccy></Acct>
+      <Ntry>
+        <Amt Ccy="EUR">62.35</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-16</Dt></BookgDt>
+        <ValDt><Dt>2026-10-16</Dt></ValDt>
+        <AcctSvcrRef>REF-1</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">62.35</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Supermarkt Beispiel</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kartenzahlung girocard</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">120.00</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-20</Dt></BookgDt>
+        <ValDt><Dt>2026-10-20</Dt></ValDt>
+        <AcctSvcrRef>REF-2</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">120.00</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Sparkasse</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kreditkartenabrechnung 09/26</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">80.00</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-24</Dt></BookgDt>
+        <ValDt><Dt>2026-10-24</Dt></ValDt>
+        <AcctSvcrRef>REF-3</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">80.00</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Modehaus Beispiel</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kartenzahlung girocard</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">30.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-28</Dt></BookgDt>
+        <ValDt><Dt>2026-10-28</Dt></ValDt>
+        <AcctSvcrRef>REF-4</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">30.00</Amt>
+            <RltdPties><Dbtr><Pty><Nm>Modehaus Beispiel</Nm></Pty></Dbtr></RltdPties>
+            <RmtInf><Ustrd>Gutschrift Retoure</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">557.00</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-30</Dt></BookgDt>
+        <ValDt><Dt>2026-10-30</Dt></ValDt>
+        <AcctSvcrRef>REF-5</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><MndtId>MANDAT-003</MndtId></Refs>
+            <Amt Ccy="EUR">557.00</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Versicherung Beispiel AG</Nm><Id><PrvtId><Othr><Id>DE22ZZZ00000000002</Id></Othr></PrvtId></Id></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Jahresbeitrag Hausrat</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        <AddtlNtryInf>ERSTLASTSCHRIFT</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">3100.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-11-02</Dt></BookgDt>
+        <ValDt><Dt>2026-11-02</Dt></ValDt>
+        <AcctSvcrRef>REF-6</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">3100.00</Amt>
+            <RltdPties><Dbtr><Pty><Nm>Arbeitgeber Beispiel GmbH</Nm></Pty></Dbtr><DbtrAcct><Id><IBAN>DE48000000000000000099</IBAN></Id></DbtrAcct></RltdPties>
+            <RmtInf><Ustrd>Gehalt November</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">950.00</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-11-03</Dt></BookgDt>
+        <ValDt><Dt>2026-11-03</Dt></ValDt>
+        <AcctSvcrRef>REF-7</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">950.00</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Hausverwaltung Muster</Nm></Pty></Cdtr><CdtrAcct><Id><IBAN>DE48000000000000000099</IBAN></Id></CdtrAcct></RltdPties>
+            <RmtInf><Ustrd>Miete November</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">13.99</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-11-03</Dt></BookgDt>
+        <ValDt><Dt>2026-11-03</Dt></ValDt>
+        <AcctSvcrRef>REF-8</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs><MndtId>MANDAT-001</MndtId></Refs>
+            <Amt Ccy="EUR">13.99</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Streaming Beispiel</Nm><Id><PrvtId><Othr><Id>DE98ZZZ09999999999</Id></Othr></PrvtId></Id></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Abo</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        <AddtlNtryInf>FOLGELASTSCHRIFT</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">49.99</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>PDNG</Cd></Sts>
+        <BookgDt><Dt>2026-11-14</Dt></BookgDt>
+        <ValDt><Dt>2026-11-14</Dt></ValDt>
+        <AcctSvcrRef>REF-9</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">49.99</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Elektronikmarkt Beispiel</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kartenzahlung girocard</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="EUR">18.64</Amt>
+        <CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts><Cd>PDNG</Cd></Sts>
+        <BookgDt><Dt>2026-11-15</Dt></BookgDt>
+        <ValDt><Dt>2026-11-15</Dt></ValDt>
+        <AcctSvcrRef>REF-10</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs></Refs>
+            <Amt Ccy="EUR">18.64</Amt>
+            <RltdPties><Cdtr><Pty><Nm>Bäckerei Beispiel</Nm></Pty></Cdtr></RltdPties>
+            <RmtInf><Ustrd>Kartenzahlung girocard</Ustrd></RmtInf>
+          </TxDtls>
+        </NtryDtls>
+        
+      </Ntry>
+    </Rpt>
+  </BkToCstmrAcctRpt>
+</Document>

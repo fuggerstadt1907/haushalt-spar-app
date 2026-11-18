@@ -1,6 +1,6 @@
 # Haushalt-Spar-App
 
-> Status: not ready (Etappen 1–4 startbereit) · Ticket: Freitext (Chat, 2026-11-18) · Stand: 2026-11-18
+> Status: not ready (Etappe 1 umgesetzt, Etappen 2–4 startbereit) · Ticket: Freitext (Chat, 2026-11-18) · Stand: 2026-11-19
 
 ## Zusammenfassung
 
@@ -299,15 +299,15 @@ gar nicht dauerhaft gespeichert (R5). Alles andere bleibt, bis es gelöscht wird
   nie über Seed-Dateien im Repo.
 - Die Online-Banking-PIN für FinTS wird nie gespeichert, nie geloggt und nie an die KI gegeben.
   Sie existiert nur im Arbeitsspeicher während eines Abrufs (R26, AK17).
-- Hochgeladene Dateien werden nur so lange zwischengespeichert, bis der Import übernommen oder
-  verworfen ist (R5).
+- Hochgeladene Dateien werden nie gespeichert, sondern nur im Arbeitsspeicher gelesen. Für
+  „Übernehmen“ schickt der Browser die Datei erneut (R5, Entscheidung 35).
 - Privates Projekt ohne Dritte als Nutzer, es braucht keine Datenschutzerklärung. Rechtlich ist
   das Sache des Haushalts selbst.
 
 ## Abhängigkeiten
 
-- **Supabase** (Auth, Postgres, Storage für temporäre Uploads, pg_cron für den Aufräumlauf),
-  Free-Tier.
+- **Supabase** (Auth, Postgres, pg_cron für den Aufräumlauf), Free-Tier. Storage wird nicht
+  gebraucht, Uploads werden nur im Arbeitsspeicher gelesen (Entscheidung 35).
 - **Vercel** für das Hosting, Free-Tier.
 - **Anthropic Claude API** für Kategorisierung, Bewertung, Vertragsvorschläge und, mit dem
   Web-Search-Tool, den Tarifvergleich. Die Kosten liegen voraussichtlich bei wenigen Cent bis
@@ -364,7 +364,7 @@ weil Wartung, Backups und der Zugriff von unterwegs zu aufwendig wären.
 
 ### Etappen
 
-- **Etappe 1 – Fundament & Import** · offen · R1–R7a, R22 (Buchungsliste ohne Bewertungsfilter),
+- **Etappe 1 – Fundament & Import** · umgesetzt · 2026-11-19 · etappe-1-fundament-import · R1–R7a, R22 (Buchungsliste ohne Bewertungsfilter),
   R24, R25, R27: Login, Konten, Upload mit Vorschau, Duplikate, Arten, Buchungsliste. Allein schon
   nützlich, weil alle Konten an einem Ort zusammenlaufen. Beginnt mit dem Projekt-Setup:
   - Git-Repository, Next.js-Projekt mit TypeScript
@@ -446,9 +446,26 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | 31 | Kündigungsfristen | Je Vertragsart vorbelegt, überschreibbar; „Frist naht“ 4 Wochen vor letztem Kündigungstag | Gängige gesetzliche Fristen, lieber früher warnen |
 | 32 | Bankabruf | FinTS auf Knopfdruck, PIN nie gespeichert; Fallback Enable Banking | Einzige kostenlose Option inkl. Kreditkarte, ohne gespeicherte PIN |
 | 33 | Beispieldateien | Liegen vor; CAMT ohne Salden → Vorschau mit Summenabgleich statt Saldo-Prüfung | Sparkassen-Export liefert keine Salden |
+| 34 | Entwicklungs-Datenbank | Direkt gegen das Supabase-Cloud-Projekt (EU), Logik per Unit-Test ohne DB | Docker fehlt lokal, keine Installation nötig |
+| 35 | Upload zwischen Vorschau und Übernehmen | Datei wird nie gespeichert. Der Server parst im Speicher, bei „Übernehmen“ schickt der Browser sie erneut | Kein Storage, nichts aufzuräumen, AK3 strukturell erfüllt |
+| 36 | Duplikate und Vormerkungen | Fingerprint aus Konto, Datum, Betrag, Gegenpartei, Text, laufende Nummer. Vorgemerkt→gebucht (oder geänderte Vormerkung): gleiches Konto, gleicher Betrag, passende Gegenpartei, ±5 Tage, gleiche Zeile. Gelöscht werden nur Vormerkungen im Zeitraum der Datei | Robust, auch wenn die Sparkasse Referenzen ändert; Bewertung bleibt erhalten |
+| 37 | Erkennung der Sammelabbuchung | Karte: positive Zeile „Lastschrift“. Giro: Abbuchung mit gleichem Betrag ±5 Tage, sonst Textmuster (Kreditkarte/Mastercard, nicht girocard) | Funktioniert in beiden Import-Reihenfolgen und ohne Kartenabrechnung |
+| 38 | Erstattungen | Gutschrift derselben Gegenpartei, bis 90 Tage nach der Ausgabe, höchstens bis zum noch nicht erstatteten Betrag. Gutschriften auf der Karte sind immer Erstattungen | Teilerstattungen möglich, keine Doppelverrechnung |
+| 39 | UI-Stack | Tailwind + shadcn/ui (Base UI) | Responsiv (R24) und zugängliche Komponenten |
+| 40 | Repo | Public auf GitHub, Secret-Check per gitleaks vor Commit und Push | Push Protection greift nur bei öffentlichen Repos kostenlos |
+| 41 | Registrierung abschalten | `auth.enable_signup = false`, E-Mail-Provider bleibt an | `auth.email.enable_signup = false` schaltet in Supabase den ganzen E-Mail-Login ab |
+| 42 | IBAN in der Oberfläche | Nur maskiert („endet auf …“), Feld leer = unverändert | IBAN verlässt den Server nie |
+| 43 | Gläubiger-IDs im Secret-Check | SEPA-Gläubiger-IDs (`..ZZZ…`) sind erlaubt | Keine Kontodaten, werden in Testdaten gebraucht |
 
 ## Offene Punkte
 
 | # | Frage | Wer klärt | Blockiert |
 | --- | --- | --- | --- |
+| F1 | Import löschen macht Folgen nicht rückgängig: per Karte umgestufte Giro-Abbuchungen bleiben Sammelabbuchung, ersetzte Vormerkungen gehören dem neuen Import, überlappende Buchungen dem ersten. Soll Löschen das zurückdrehen? | Alessandro | – |
+| F2 | Textmuster der Sammelabbuchung (Giro) und Gegenpartei bei Kartenzahlungen mit einem echten, gebuchten Sparkassen-Export prüfen. Die Beispieldatei enthält nur Vormerkungen | Alessandro | – |
+| F3 | Fehlertexte in Produktion: Next ersetzt Server-Fehlermeldungen, der Hinweis „kein Haushalt zugeordnet“ erreicht den User nicht | – | – |
+| F4 | Steuererstattung nach Steuerzahlung an dieselbe Stelle wird als Erstattung statt Einnahme erkannt. In Etappe 2 per Regel korrigierbar? | – | – |
+| F5 | IBAN entfernen oder ändern macht die daraus erkannten Umbuchungen nicht rückgängig | – | – |
+| F6 | Übernehmen beide gleichzeitig dieselbe Datei, kann der Import an `refund_of` scheitern und muss wiederholt werden | – | – |
+| F7 | Vercel-Deploy und GitHub-Repo (public, Push Protection) stehen noch aus: Repo nach OK anlegen, Vercel verknüpft Alessandro | Alessandro | – |
 | O2 | FinTS-Produkt-ID beantragen: Formular von fints.org/de/hersteller/produktregistrierung ausfüllen (Produktname, Version, Hersteller = dein Name, Produkttyp „Privatanwender-Software“/Webserver-Anwendung) und an registrierung@hbci-zka.de senden. Antwort in 10–15 Werktagen. Ablauf und Formularwerte: [Plan O2](../plans/o2-fints-produktregistrierung.md). Wird sie abgelehnt, gilt der Fallback Enable Banking. | Alessandro | Etappe 5 |

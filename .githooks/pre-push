@@ -1,0 +1,12 @@
+#!/bin/sh
+# Secret-Check vor jedem Push (R27): prüft alle Commits, die das Remote noch nicht kennt.
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks fehlt. Installieren mit: brew install gitleaks" >&2
+  exit 1
+fi
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha"; else range="$remote_sha..$local_sha"; fi
+  gitleaks git --redact --no-banner --config .gitleaks.toml --log-opts="$range" || exit 1
+done

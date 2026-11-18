@@ -1,0 +1,6 @@
+"Umsatz getätigt von";"Belegdatum";"Buchungsdatum";"Originalbetrag";"Originalwährung";"Umrechnungskurs";"Buchungsbetrag";"Buchungswährung";"Transaktionsbeschreibung";"Transaktionsbeschreibung Zusatz";"Buchungsreferenz";"Gebührenschlüssel";"Länderkennzeichen";"BAR-Entgelt+Buchungsreferenz";"AEE+Buchungsreferenz";"Abrechnungskennzeichen"
+"KARTE-001";"11.10.26";"12.10.26";"-25,00";"USD";"1,00";"-22,44";"EUR";"Digitale Produkte Beispiel";"";"TX-001";"5818";"";"";"";""
+"KARTE-001";"11.10.26";"12.10.26";"0,00";"";"1,00";"-0,39";"EUR";"Währungsumrechnungsgebühr";"";"TX-002";"5818";"";"";"";""
+"KARTE-001";"14.10.26";"15.10.26";"0,00";"";"1,00";"-45,01";"EUR";"Tankstelle Beispiel";"";"TX-003";"5541";"";"";"";""
+"KARTE-001";"17.10.26";"19.10.26";"0,00";"";"1,00";"-52,16";"EUR";"Lebensmittel Beispiel";"";"TX-004";"5411";"";"";"";""
+"KARTE-001";"20.10.26";"20.10.26";"0,00";"";"1,00";"120,00";"EUR";"Lastschrift";"";"TX-005";"";"";"";"";""

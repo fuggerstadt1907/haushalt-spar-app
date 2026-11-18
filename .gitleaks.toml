@@ -11,5 +11,5 @@ regex = '''\b[A-Z]{2}[0-9]{2}(?:[ ]?[A-Z0-9]{4}){3,7}(?:[ ]?[A-Z0-9]{1,3})?\b'''
 keywords = ["de", "at", "ch", "iban"]
 
 [[rules.allowlists]]
-description = "Synthetische Test-IBANs mit Bankleitzahl 00000000"
-regexes = ['''^[A-Z]{2}[0-9]{2}[ ]?0000[ ]?0000''']
+description = "Synthetische Test-IBANs mit Bankleitzahl 00000000 und SEPA-Gläubiger-IDs (ZZZ, keine Kontodaten)"
+regexes = ['''^[A-Z]{2}[0-9]{2}[ ]?0000[ ]?0000''', '''^[A-Z]{2}[0-9]{2}ZZZ''']
