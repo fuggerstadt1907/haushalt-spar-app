@@ -459,13 +459,13 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | 42 | IBAN in der Oberfläche | Nur maskiert („endet auf …“), Feld leer = unverändert | IBAN verlässt den Server nie |
 | 43 | Gläubiger-IDs im Secret-Check | SEPA-Gläubiger-IDs (`..ZZZ…`) sind erlaubt | Keine Kontodaten, werden in Testdaten gebraucht |
 | 44 | Gebuchte Umsätze kommen als eine CAMT-Datei pro Tag | Import nimmt mehrere Dateien oder die ZIP an und führt sie zu einer Vorschau zusammen. Saldo-Prüfung vom Anfangssaldo des ersten bis zum Endsaldo des letzten Tages | Echter Sparkassen-Export; die Tagesdateien enthalten Salden, ein fehlender Tag fällt als Differenz auf |
+| 45 | Erkennung mit echten Daten geprüft (F2) | Echter Export 24.08.–19.11.: alle 3 Kartenabrechnungen auf dem Girokonto als Sammelabbuchung erkannt, 2 Erstattungen plausibel | Regeln aus Entscheidung 37 und 38 bleiben unverändert |
 
 ## Offene Punkte
 
 | # | Frage | Wer klärt | Blockiert |
 | --- | --- | --- | --- |
 | F1 | Import löschen macht Folgen nicht rückgängig: per Karte umgestufte Giro-Abbuchungen bleiben Sammelabbuchung, ersetzte Vormerkungen gehören dem neuen Import, überlappende Buchungen dem ersten. Soll Löschen das zurückdrehen? | Alessandro | – |
-| F2 | Textmuster der Sammelabbuchung (Giro) und Gegenpartei bei Kartenzahlungen mit einem echten, gebuchten Sparkassen-Export prüfen. Die Beispieldatei enthält nur Vormerkungen | Alessandro | – |
 | F3 | Fehlertexte in Produktion: Next ersetzt Server-Fehlermeldungen, der Hinweis „kein Haushalt zugeordnet“ erreicht den User nicht | – | – |
 | F4 | Steuererstattung nach Steuerzahlung an dieselbe Stelle wird als Erstattung statt Einnahme erkannt. In Etappe 2 per Regel korrigierbar? | – | – |
 | F5 | IBAN entfernen oder ändern macht die daraus erkannten Umbuchungen nicht rückgängig | – | – |
