@@ -27,7 +27,7 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL` | `.env.local`, Vercel | Projekt-URL, darf öffentlich sein |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env.local`, Vercel | `sb_publishable_…`, darf öffentlich sein, RLS schützt die Daten |
 | `SUPABASE_SECRET_KEY` | nur `.env.local` | `sb_secret_…`, nur für `npm run create-user`. Nie committen, nicht bei Vercel |
-| `ANTHROPIC_API_KEY` | ab Etappe 2, nur serverseitig | Nie committen |
+| `GEMINI_API_KEY` | ab Etappe 2, `.env.local` und Vercel (Secret) | Google AI Studio, nur serverseitig. Nie committen |
 
 Secrets liegen nur in `.env.local` (gitignored) und in den Umgebungsvariablen von Vercel.
 

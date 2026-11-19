@@ -288,7 +288,7 @@ gar nicht dauerhaft gespeichert (R5). Alles andere bleibt, bis es gelöscht wird
 - Alle Tabellen haben Row Level Security in Supabase: Lesen und Schreiben nur für Profile
   desselben Haushalts. Durchgesetzt wird das in der Datenbank, nicht im Client.
 - Die öffentliche Registrierung ist in Supabase Auth abgeschaltet.
-- Der Claude-API-Key existiert nur serverseitig (Next.js-Server-Routen). Der Client spricht die
+- Der KI-API-Key (Gemini, Entscheidung 46) existiert nur serverseitig (Next.js-Server-Routen). Der Client spricht die
   API nie direkt an.
 - Die Pseudonymisierung vor jedem KI-Aufruf (R8) wird serverseitig erzwungen und mit einem Test
   abgesichert (AK7).
@@ -296,7 +296,7 @@ gar nicht dauerhaft gespeichert (R5). Alles andere bleibt, bis es gelöscht wird
 - Das Repo ist public-tauglich (R27). Secrets liegen nur in `.env.local` (gitignored) sowie in den
   Umgebungsvariablen von Vercel und Supabase. Im Repo liegt nur eine `.env.example` mit
   Platzhaltern. Die Supabase-URL und der Publishable Key dürfen öffentlich sein, weil RLS den
-  Zugriff schützt. Der Service-Role-Key und der Anthropic-Key dürfen es nie. Echte Daten (eigene
+  Zugriff schützt. Der Service-Role-Key und der Gemini-Key dürfen es nie. Echte Daten (eigene
   IBANs, Account-E-Mails) kommen nur über die App oder das Supabase-Dashboard in die Datenbank,
   nie über Seed-Dateien im Repo.
 - Die Online-Banking-PIN für FinTS wird nie gespeichert, nie geloggt und nie an die KI gegeben.
@@ -311,9 +311,11 @@ gar nicht dauerhaft gespeichert (R5). Alles andere bleibt, bis es gelöscht wird
 - **Supabase** (Auth, Postgres, pg_cron für den Aufräumlauf), Free-Tier. Storage wird nicht
   gebraucht, Uploads werden nur im Arbeitsspeicher gelesen (Entscheidung 35).
 - **Vercel** für das Hosting, Free-Tier.
-- **Anthropic Claude API** für Kategorisierung, Bewertung, Vertragsvorschläge und, mit dem
-  Web-Search-Tool, den Tarifvergleich. Die Kosten liegen voraussichtlich bei wenigen Cent bis
-  einigen Euro pro Monat.
+- **Google Gemini API** (kostenlose Stufe, Entscheidung 46) für Kategorisierung, Bewertung,
+  Vertragsvorschläge und, mit der Google-Suche als Werkzeug, den Tarifvergleich. Die kostenlose
+  Stufe hat Ratenlimits pro Minute und Tag. Die Bewertung läuft deshalb gebündelt, und was nicht
+  durchgeht, bleibt unter „Zu prüfen“. Der KI-Aufruf liegt hinter einer austauschbaren
+  Schnittstelle, ein Wechsel zu bezahlter Stufe oder anderem Anbieter ändert nur die Konfiguration.
 - **Beispieldateien** liegen in `fixtures/private/` (gitignored): eine CAMT-V8-Datei mit
   vorgemerkten Umsätzen und eine Kreditkarten-CSV. Fürs Repo werden daraus synthetische Fixtures
   erzeugt.
@@ -341,14 +343,14 @@ weil Wartung, Backups und der Zugriff von unterwegs zu aufwendig wären.
    Speichern. _Entscheidung:_ Adapter-Schnittstelle, weil es mehrere Formate gibt und FinTS
    später andocken soll. _Entscheidung:_ CAMT V8 XML statt CSV-CAMT, weil es Salden für die
    Saldo-Prüfung enthalten könnte (bei der Sparkasse leider nicht) und streng strukturiert ist. MT940 ist veraltet.
-3. **Bewertung**: zuerst Regeln, dann pseudonymisierter Batch-Aufruf an Claude mit strukturierter
+3. **Bewertung**: zuerst Regeln, dann pseudonymisierter Batch-Aufruf an die KI (Gemini) mit strukturierter
    Ausgabe (Kategorie, Notwendigkeit, Dringlichkeit, Begründung). _Entscheidung:_ Die KI schlägt
    vor, Menschen bestätigen, und Korrekturen werden zu Regeln. _Verworfen:_ Die KI entscheidet
    allein, weil Fehler sonst unbemerkt in den Zahlen landen.
 4. **Verträge**: Erkennung wiederkehrender Zahlungen, Vertragskarten, Status, Warnung bei Zahlung
    trotz Kündigung, KI-Aktionsvorschlag, Handlungspriorität.
 5. **Einnahmen**: erkannte und manuelle Einnahmequellen.
-6. **Tarifvergleich**: Claude mit Web-Search auf Knopfdruck, Ergebnisse am Vertrag gespeichert.
+6. **Tarifvergleich**: KI mit Websuche auf Knopfdruck, Ergebnisse am Vertrag gespeichert.
    _Verworfen:_ automatische Suche vor Fristende, weil sie laufende Kosten und einen Scheduler
    braucht.
 7. **Cockpit & Auswertungen**: Startseite, Buchungsliste, Monatsübersicht, Hilfe.
@@ -388,7 +390,7 @@ weil Wartung, Backups und der Zugriff von unterwegs zu aufwendig wären.
 - Neues Supabase-Projekt (EU). Migrationen über die Supabase CLI, im Repo versioniert. Beim
   Deploy laufen zuerst die Migrationen, dann der Client.
 - Deploy auf Vercel aus dem Haupt-Branch (https://haushalt-spar-app.vercel.app, seit 2026-11-19). Umgebungsvariablen: Supabase-URL und -Keys sowie der
-  Anthropic-API-Key (nur serverseitig).
+  Gemini-API-Key (`GEMINI_API_KEY`, nur serverseitig, bei Vercel als Secret).
 - Einmalig: die beiden Accounts in Supabase Auth anlegen und dem Haushalt zuordnen, die Konten
   anlegen.
 - Jede Etappe ist ein eigener Deploy. Feature-Flags braucht es nicht, da es nur zwei Nutzer gibt.
@@ -416,7 +418,7 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | # | Frage | Entscheidung | Begründung |
 | --- | --- | --- | --- |
 | 1 | Wer nutzt die App? | Alessandro und Partner:in, eigene Logins | Gemeinsame Verantwortung für die Familienfinanzen |
-| 2 | Wie wird die KI eingesetzt? | Claude API, pseudonymisiert | Gute Qualität, sensible Kennungen verlassen den Server nicht |
+| 2 | Wie wird die KI eingesetzt? | Cloud-KI, pseudonymisiert (Anbieter: siehe 46) | Gute Qualität, sensible Kennungen verlassen den Server nicht |
 | 3 | Erfolgskriterium | Fixkosten messbar senken | Kernanliegen des Tickets |
 | 4 | Hosting | Supabase (EU) + Vercel | Zugriff für beide auch mobil, Auth/RLS fertig, kostenlos |
 | 5 | Konten | Mehrere Sparkassen-Konten + Sparkassen-Mastercard Gold | Gesamtbild des Haushalts |
@@ -460,6 +462,7 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | 43 | Gläubiger-IDs im Secret-Check | SEPA-Gläubiger-IDs (`..ZZZ…`) sind erlaubt | Keine Kontodaten, werden in Testdaten gebraucht |
 | 44 | Gebuchte Umsätze kommen als eine CAMT-Datei pro Tag | Import nimmt mehrere Dateien oder die ZIP an und führt sie zu einer Vorschau zusammen. Saldo-Prüfung vom Anfangssaldo des ersten bis zum Endsaldo des letzten Tages | Echter Sparkassen-Export; die Tagesdateien enthalten Salden, ein fehlender Tag fällt als Differenz auf |
 | 45 | Erkennung mit echten Daten geprüft (F2) | Echter Export 24.08.–19.11.: alle 3 Kartenabrechnungen auf dem Girokonto als Sammelabbuchung erkannt, 2 Erstattungen plausibel | Regeln aus Entscheidung 37 und 38 bleiben unverändert |
+| 46 | KI-Anbieter (ersetzt Entscheidung 2 beim Anbieter) | Google Gemini API, kostenlose Stufe, eigenes Projekt in AI Studio. Pseudonymisierung (R8) unverändert | Kein Anthropic-Konto, Start ohne Kosten. Bewusst in Kauf genommen: In der kostenlosen Stufe darf Google die pseudonymisierten Eingaben (Händler, Betrag, Datum, bereinigter Text) zur Produktverbesserung nutzen. Wechsel zur bezahlten Stufe jederzeit per „Abrechnung einrichten“ |
 
 ## Offene Punkte
 
