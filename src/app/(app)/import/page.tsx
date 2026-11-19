@@ -38,7 +38,7 @@ export default function ImportPage() {
     <>
       <PageHeader
         title="Import"
-        description="Girokonto: CAMT-XML (camt.052) aus dem Online-Banking. Kreditkarte: Umsatz-CSV der Mastercard. Die Datei wird nur gelesen und nicht gespeichert."
+        description="Girokonto: CAMT-XML (camt.052) aus dem Online-Banking, gerne alle Tagesdateien auf einmal oder die ZIP. Kreditkarte: Umsatz-CSV der Mastercard. Dateien werden nur gelesen und nicht gespeichert."
       />
       <Suspense fallback={<p className="text-sm text-muted-foreground">Lädt …</p>}>
         <ImportSection />

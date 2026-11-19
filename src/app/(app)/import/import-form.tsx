@@ -24,8 +24,8 @@ const IDLE: ImportActionState = { status: "idle" };
 
 export function ImportForm({ accounts }: { accounts: { id: string; label: string }[] }) {
   const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
-  // Die Datei bleibt nur im Browser-Speicher und wird bei „Übernehmen“ erneut geschickt (R5).
-  const [file, setFile] = useState<File | null>(null);
+  // Die Dateien bleiben nur im Browser-Speicher und werden bei „Übernehmen“ erneut geschickt (R5).
+  const [files, setFiles] = useState<File[]>([]);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [confirmMismatch, setConfirmMismatch] = useState(false);
   const [previewState, runPreview, previewPending] = useActionState(previewImport, IDLE);
@@ -38,13 +38,13 @@ export function ImportForm({ accounts }: { accounts: { id: string; label: string
   function formData() {
     const data = new FormData();
     data.set("accountId", accountId);
-    if (file) data.set("file", file);
+    for (const file of files) data.append("file", file);
     if (confirmMismatch) data.set("confirmBalanceMismatch", "on");
     return data;
   }
 
   function reset() {
-    setFile(null);
+    setFiles([]);
     setFileInputKey((k) => k + 1);
     setConfirmMismatch(false);
     setShowPreview(false);
@@ -91,22 +91,23 @@ export function ImportForm({ accounts }: { accounts: { id: string; label: string
           </select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="import-datei">Datei</Label>
+          <Label htmlFor="import-datei">Dateien</Label>
           <input
             key={fileInputKey}
             id="import-datei"
             type="file"
-            accept=".xml,.csv,text/xml,text/csv,application/xml"
+            multiple
+            accept=".xml,.csv,.zip,text/xml,text/csv,application/xml,application/zip"
             disabled={busy}
             className={cn(fieldClass, "py-1.5 file:mr-3 file:border-0 file:bg-transparent file:text-sm file:font-medium")}
             onChange={(e) => {
-              setFile(e.target.files?.[0] ?? null);
+              setFiles(Array.from(e.target.files ?? []));
               setShowPreview(false);
               setLastAction(null);
             }}
           />
         </div>
-        <Button type="submit" className="h-10" disabled={!file || !accountId || busy}>
+        <Button type="submit" className="h-10" disabled={files.length === 0 || !accountId || busy}>
           {previewPending ? "Wird gelesen …" : "Vorschau"}
         </Button>
       </form>
@@ -206,7 +207,7 @@ function PreviewPanel({
           <AlertDescription className="space-y-3">
             <p>
               Anfangssaldo {formatCents(balance.openingCents)} + Buchungen {formatCents(balance.bookedSumCents)} ergibt
-              nicht den Endsaldo {formatCents(balance.closingCents)}. Möglicherweise fehlen Buchungen in der Datei.
+              nicht den Endsaldo {formatCents(balance.closingCents)}. Möglicherweise fehlen Buchungen, z. B. eine Tagesdatei.
             </p>
             <label className="flex items-start gap-2 text-foreground">
               <input

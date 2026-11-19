@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect, unstable_rethrow } from "next/navigation";
 import { requireProfile } from "@/lib/dal";
-import { parseStatement } from "@/lib/import/adapters";
+import { MAX_UPLOAD_BYTES, parseFiles } from "@/lib/import/files";
 import {
   buildImportPreview,
   MATCH_WINDOW_DAYS,
@@ -17,7 +17,6 @@ import {
 import { fetchAll } from "@/lib/supabase/fetch-all";
 import { ImportError, type BookingStatus, type TransactionKind } from "@/lib/import/types";
 
-const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 /** Was der Browser von der Vorschau sieht. IBANs bleiben auf dem Server. */
 export interface PreviewView {
@@ -61,18 +60,22 @@ async function computePreview(formData: FormData) {
   const { supabase } = await requireProfile();
 
   const accountId = formData.get("accountId");
-  const file = formData.get("file");
+  const files = formData.getAll("file").filter((f): f is File => f instanceof File && f.size > 0);
   if (typeof accountId !== "string" || !accountId) throw new ImportError("Bitte ein Konto wählen.");
-  if (!(file instanceof File) || file.size === 0) throw new ImportError("Bitte eine Datei wählen.");
-  if (file.size > MAX_FILE_BYTES) throw new ImportError("Die Datei ist größer als 5 MB.");
+  if (files.length === 0) throw new ImportError("Bitte eine Datei wählen.");
+  if (files.reduce((sum, f) => sum + f.size, 0) > MAX_UPLOAD_BYTES) {
+    throw new ImportError("Die Dateien sind zusammen größer als 4 MB. Bitte in mehreren Teilen importieren.");
+  }
 
   const { data: accounts, error: accountsError } = await supabase.from("account").select("id, name, type, iban");
   if (accountsError) throw accountsError;
   const account = accounts.find((a) => a.id === accountId);
   if (!account) throw new ImportError("Konto nicht gefunden.");
 
-  const content = new Uint8Array(await file.arrayBuffer());
-  const statement = parseStatement(content, account.type as "giro" | "credit_card");
+  const statement = parseFiles(
+    await Promise.all(files.map(async (f) => ({ name: f.name, content: new Uint8Array(await f.arrayBuffer()) }))),
+    account.type as "giro" | "credit_card",
+  );
 
   if (statement.accountIban) {
     const fileIban = normalizeIban(statement.accountIban);
@@ -115,7 +118,8 @@ async function computePreview(formData: FormData) {
     existing,
     ownAccounts,
   });
-  return { supabase, account, statement, preview, fileName: file.name };
+  const fileName = files.length === 1 ? files[0].name : `${files.length} Dateien`;
+  return { supabase, account, statement, preview, fileName };
 }
 
 function toErrorState(error: unknown): ImportActionState {

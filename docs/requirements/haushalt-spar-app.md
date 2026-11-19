@@ -51,7 +51,9 @@ Jede Änderung (Bewertung, Vertragsstatus, Import) speichert, wer sie vorgenomme
     der Buchungsbetrag in EUR, Fremdwährungsbeträge werden angezeigt.
 
   Die Beispieldateien zeigen: Der CAMT-Export ist `camt.052.001.08` mit dem Status pro Eintrag
-  (`PDNG` = vorgemerkt, `BOOK` = gebucht) und enthält **keine Salden**. Auch die CSV hat keine.
+  (`PDNG` = vorgemerkt, `BOOK` = gebucht). Gebuchte Umsätze kommen als eine Datei pro Buchungstag
+  (einzeln oder als ZIP), jeweils **mit** Anfangs- und Endsaldo. Vorgemerkte Umsätze und die CSV
+  haben keine Salden.
 - **R4**: Nach dem Upload kommt eine Vorschau mit allen erkannten Buchungen. Sie prüft, ob
   Anfangssaldo plus Buchungen den Endsaldo ergeben, sofern die Datei Salden enthält. Bei den
   Sparkassen-Exporten ist das nicht der Fall. Dann zeigt die Vorschau Anzahl, Zeitraum und Summe
@@ -456,6 +458,7 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | 41 | Registrierung abschalten | `auth.enable_signup = false`, E-Mail-Provider bleibt an | `auth.email.enable_signup = false` schaltet in Supabase den ganzen E-Mail-Login ab |
 | 42 | IBAN in der Oberfläche | Nur maskiert („endet auf …“), Feld leer = unverändert | IBAN verlässt den Server nie |
 | 43 | Gläubiger-IDs im Secret-Check | SEPA-Gläubiger-IDs (`..ZZZ…`) sind erlaubt | Keine Kontodaten, werden in Testdaten gebraucht |
+| 44 | Gebuchte Umsätze kommen als eine CAMT-Datei pro Tag | Import nimmt mehrere Dateien oder die ZIP an und führt sie zu einer Vorschau zusammen. Saldo-Prüfung vom Anfangssaldo des ersten bis zum Endsaldo des letzten Tages | Echter Sparkassen-Export; die Tagesdateien enthalten Salden, ein fehlender Tag fällt als Differenz auf |
 
 ## Offene Punkte
 
