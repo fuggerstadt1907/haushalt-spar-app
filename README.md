@@ -34,7 +34,7 @@ Secrets liegen nur in `.env.local` (gitignored) und in den Umgebungsvariablen vo
 ## Datenbank
 
 Migrationen liegen versioniert in `supabase/migrations/`, die Auth-Einstellungen in
-`supabase/config.toml` (öffentliche Registrierung aus, Passwörter ab 12 Zeichen).
+`supabase/config.toml` (öffentliche Registrierung aus, Passwörter ab 8 Zeichen mit Groß- und Kleinbuchstaben, Zahl und Sonderzeichen).
 
 ```bash
 supabase link --project-ref <project-ref>

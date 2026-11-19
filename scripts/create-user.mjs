@@ -68,9 +68,10 @@ if (household) {
   }
 }
 
-const password = await askHidden("Passwort (mind. 12 Zeichen): ");
-if (password.length < 12) {
-  console.error("Das Passwort ist zu kurz.");
+// Gleiche Regeln wie in supabase/config.toml (auth.password_requirements).
+const password = await askHidden("Passwort (mind. 8 Zeichen, Groß- und Kleinbuchstaben, Zahl, Sonderzeichen): ");
+if (password.length < 8 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+  console.error("Das Passwort erfüllt die Regeln nicht: mind. 8 Zeichen, Groß- und Kleinbuchstaben, eine Zahl und ein Sonderzeichen.");
   process.exit(1);
 }
 
