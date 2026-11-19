@@ -84,6 +84,38 @@ export type Database = {
           },
         ]
       }
+      category: {
+        Row: {
+          created_at: string
+          household_id: string
+          id: string
+          is_default: boolean
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          is_default?: boolean
+          name: string
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "household"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       household: {
         Row: {
           created_at: string
@@ -169,6 +201,119 @@ export type Database = {
           },
         ]
       }
+      merchant_rule: {
+        Row: {
+          category_id: string | null
+          counterparty_key: string
+          counterparty_label: string
+          created_at: string
+          created_by: string | null
+          household_id: string
+          id: string
+          kind: string
+          necessity: string | null
+          updated_at: string
+          updated_by: string | null
+          urgency: string | null
+        }
+        Insert: {
+          category_id?: string | null
+          counterparty_key: string
+          counterparty_label: string
+          created_at?: string
+          created_by?: string | null
+          household_id?: string
+          id?: string
+          kind: string
+          necessity?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          urgency?: string | null
+        }
+        Update: {
+          category_id?: string | null
+          counterparty_key?: string
+          counterparty_label?: string
+          created_at?: string
+          created_by?: string | null
+          household_id?: string
+          id?: string
+          kind?: string
+          necessity?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          urgency?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_rule_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "merchant_rule_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "merchant_rule_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "household"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "merchant_rule_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      private_name: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          household_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          household_id?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          household_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "private_name_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "private_name_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "household"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile: {
         Row: {
           created_at: string
@@ -201,11 +346,13 @@ export type Database = {
       transaction: {
         Row: {
           account_id: string
+          ai_reason: string | null
           amount_cents: number
           bank_reference: string | null
           booking_date: string
           booking_status: string
           booking_text: string | null
+          category_id: string | null
           counterparty: string | null
           counterparty_iban: string | null
           created_at: string
@@ -217,21 +364,27 @@ export type Database = {
           kind: string
           mandate_reference: string | null
           merchant_category_code: string | null
+          necessity: string | null
           original_amount_cents: number | null
           original_currency: string | null
           purpose: string | null
+          rating_source: string | null
           refund_of: string | null
+          review_status: string
           updated_at: string
           updated_by: string | null
+          urgency: string | null
           value_date: string | null
         }
         Insert: {
           account_id: string
+          ai_reason?: string | null
           amount_cents: number
           bank_reference?: string | null
           booking_date: string
           booking_status: string
           booking_text?: string | null
+          category_id?: string | null
           counterparty?: string | null
           counterparty_iban?: string | null
           created_at?: string
@@ -243,21 +396,27 @@ export type Database = {
           kind: string
           mandate_reference?: string | null
           merchant_category_code?: string | null
+          necessity?: string | null
           original_amount_cents?: number | null
           original_currency?: string | null
           purpose?: string | null
+          rating_source?: string | null
           refund_of?: string | null
+          review_status?: string
           updated_at?: string
           updated_by?: string | null
+          urgency?: string | null
           value_date?: string | null
         }
         Update: {
           account_id?: string
+          ai_reason?: string | null
           amount_cents?: number
           bank_reference?: string | null
           booking_date?: string
           booking_status?: string
           booking_text?: string | null
+          category_id?: string | null
           counterparty?: string | null
           counterparty_iban?: string | null
           created_at?: string
@@ -269,12 +428,16 @@ export type Database = {
           kind?: string
           mandate_reference?: string | null
           merchant_category_code?: string | null
+          necessity?: string | null
           original_amount_cents?: number | null
           original_currency?: string | null
           purpose?: string | null
+          rating_source?: string | null
           refund_of?: string | null
+          review_status?: string
           updated_at?: string
           updated_by?: string | null
+          urgency?: string | null
           value_date?: string | null
         }
         Relationships: [
@@ -283,6 +446,13 @@ export type Database = {
             columns: ["account_id"]
             isOneToOne: false
             referencedRelation: "account"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transaction_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "category"
             referencedColumns: ["id"]
           },
           {

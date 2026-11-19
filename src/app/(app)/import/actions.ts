@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect, unstable_rethrow } from "next/navigation";
+import { after } from "next/server";
 import { requireProfile } from "@/lib/dal";
 import { MAX_UPLOAD_BYTES, parseFiles } from "@/lib/import/files";
 import {
@@ -14,6 +15,7 @@ import {
   type ImportPreview,
   type PreviewStatus,
 } from "@/lib/import/preview";
+import { runRating } from "@/lib/rating/run";
 import { fetchAll } from "@/lib/supabase/fetch-all";
 import { ImportError, type BookingStatus, type TransactionKind } from "@/lib/import/types";
 
@@ -57,7 +59,7 @@ function addDays(isoDate: string, days: number): string {
  * aktuellen Bestand. Wird für „Vorschau“ und für „Übernehmen“ gleichermaßen aufgerufen.
  */
 async function computePreview(formData: FormData) {
-  const { supabase } = await requireProfile();
+  const { supabase, profile } = await requireProfile();
 
   const accountId = formData.get("accountId");
   const files = formData.getAll("file").filter((f): f is File => f instanceof File && f.size > 0);
@@ -119,7 +121,7 @@ async function computePreview(formData: FormData) {
     ownAccounts,
   });
   const fileName = files.length === 1 ? files[0].name : `${files.length} Dateien`;
-  return { supabase, account, statement, preview, fileName };
+  return { supabase, profile, account, statement, preview, fileName };
 }
 
 function toErrorState(error: unknown): ImportActionState {
@@ -170,7 +172,7 @@ export async function previewImport(_prev: ImportActionState, formData: FormData
 export async function commitImport(_prev: ImportActionState, formData: FormData): Promise<ImportActionState> {
   let target: string;
   try {
-    const { supabase, account, statement, preview } = await computePreview(formData);
+    const { supabase, profile, account, statement, preview } = await computePreview(formData);
 
     if (
       preview.balance.type === "checked" &&
@@ -216,6 +218,16 @@ export async function commitImport(_prev: ImportActionState, formData: FormData)
       p_kind_updates: preview.kindUpdates.map((u) => ({ id: u.id, kind: u.kind, refund_of: u.refundOf })),
     });
     if (error) throw error;
+
+    // Bewertung im Hintergrund (Regeln, dann KI). Was nicht klappt, bleibt unter „Zu prüfen“.
+    const ratingIds = preview.rows.filter((r) => r.previewStatus !== "existing").map((r) => r.id);
+    after(async () => {
+      try {
+        await runRating(supabase, profile.id, ratingIds);
+      } catch (ratingError) {
+        console.error("Bewertung nach Import", ratingError instanceof Error ? ratingError.message : ratingError);
+      }
+    });
 
     target = `/buchungen?konto=${account.id}&monat=${statement.periodTo.slice(0, 7)}`;
   } catch (error) {

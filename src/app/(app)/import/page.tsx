@@ -8,6 +8,9 @@ import { ImportForm } from "./import-form";
 
 export const metadata: Metadata = { title: "Import" };
 
+// Die KI-Bewertung läuft nach dem Übernehmen per after() im selben Zeitbudget.
+export const maxDuration = 60;
+
 async function ImportSection() {
   const { supabase } = await requireProfile();
   const { data: accounts, error } = await supabase.from("account").select("id, name, type").order("name");

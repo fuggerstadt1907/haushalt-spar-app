@@ -4,8 +4,18 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RatingFields, type CategoryOption, type KindOption } from "@/components/rating-editor";
 import { DELETE_ALL_CONFIRMATION } from "@/lib/labels";
-import { createAccount, deleteAllData, updateAccount, type FormState } from "./actions";
+import {
+  addPrivateName,
+  createAccount,
+  createCategory,
+  deleteAllData,
+  renameCategory,
+  updateAccount,
+  updateRule,
+  type FormState,
+} from "./actions";
 
 const INITIAL: FormState = { error: null };
 const selectClass =
@@ -98,6 +108,84 @@ export function DeleteAllForm() {
       <Button type="submit" variant="destructive" disabled={pending}>
         Alle Daten löschen
       </Button>
+      <Feedback state={state} />
+    </form>
+  );
+}
+
+export function NewCategoryForm() {
+  const [state, action, pending] = useActionState(createCategory, INITIAL);
+  return (
+    <form action={action} className="space-y-2">
+      <div className="flex gap-2">
+        <Label htmlFor="new-category" className="sr-only">
+          Neue Kategorie
+        </Label>
+        <Input id="new-category" name="name" placeholder="Neue Kategorie" required className="max-w-xs" />
+        <Button type="submit" variant="outline" disabled={pending}>
+          Anlegen
+        </Button>
+      </div>
+      <Feedback state={state} />
+    </form>
+  );
+}
+
+export function RenameCategoryForm({ category }: { category: { id: string; name: string } }) {
+  const [state, action, pending] = useActionState(renameCategory, INITIAL);
+  return (
+    <form action={action} className="min-w-0 flex-1 space-y-1">
+      <input type="hidden" name="id" value={category.id} />
+      <div className="flex gap-2">
+        <Label htmlFor={`category-${category.id}`} className="sr-only">
+          Name
+        </Label>
+        <Input id={`category-${category.id}`} name="name" defaultValue={category.name} required className="max-w-xs" />
+        <Button type="submit" variant="outline" size="sm" disabled={pending}>
+          Speichern
+        </Button>
+      </div>
+      <Feedback state={state} />
+    </form>
+  );
+}
+
+/** Die Richtung einer Regel steht fest, änderbar sind Kategorie und Stufen einer Ausgabenregel. */
+const RULE_KIND_OPTIONS: KindOption[] = [{ value: "expense", label: "Ausgabe" }];
+
+export function RuleForm({
+  rule,
+  categories,
+}: {
+  rule: { id: string; kind: string; categoryId: string | null; necessity: string | null; urgency: string | null };
+  categories: CategoryOption[];
+}) {
+  const [state, action, pending] = useActionState(updateRule, INITIAL);
+  return (
+    <form action={action} className="space-y-3">
+      <input type="hidden" name="id" value={rule.id} />
+      <RatingFields idPrefix={rule.id} rating={rule} kindOptions={RULE_KIND_OPTIONS} categories={categories} />
+      <Button type="submit" variant="outline" size="sm" disabled={pending}>
+        Speichern
+      </Button>
+      <Feedback state={state} />
+    </form>
+  );
+}
+
+export function PrivateNameForm() {
+  const [state, action, pending] = useActionState(addPrivateName, INITIAL);
+  return (
+    <form action={action} className="space-y-2">
+      <div className="flex gap-2">
+        <Label htmlFor="private-name" className="sr-only">
+          Name
+        </Label>
+        <Input id="private-name" name="name" placeholder="z. B. vollständiger Name" autoComplete="off" required className="max-w-xs" />
+        <Button type="submit" variant="outline" disabled={pending}>
+          Hinzufügen
+        </Button>
+      </div>
       <Feedback state={state} />
     </form>
   );

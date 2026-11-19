@@ -1,6 +1,6 @@
 # Haushalt-Spar-App
 
-> Status: not ready (Etappe 1 umgesetzt, Etappen 2–4 startbereit) · Ticket: Freitext (Chat, 2026-11-18) · Stand: 2026-11-19
+> Status: not ready (Etappen 1–2 umgesetzt, Etappen 3–4 startbereit) · Ticket: Freitext (Chat, 2026-11-18) · Stand: 2026-11-19
 
 ## Zusammenfassung
 
@@ -76,7 +76,9 @@ Jede Änderung (Bewertung, Vertragsstatus, Import) speichert, wer sie vorgenomme
 
 - **R8**: Vor jedem KI-Aufruf werden IBANs, Kontonummern und Namen von Privatpersonen entfernt
   bzw. durch Platzhalter ersetzt. An die KI gehen nur Buchungstext (bereinigt), Gegenpartei
-  (Firmenname), Betrag und Datum.
+  (Firmenname), Betrag und Datum, bei Kartenumsätzen der Händlerkategorie-Code (R3) und dazu die
+  Namen der Kategorien. Zusätzlich entfernt werden die Namen einer Namensliste in den
+  Einstellungen (Entscheidung 54).
 - **R9**: Die KI schlägt für jede neue Ausgabe vor:
   - eine Kategorie aus der Kategorienliste,
   - die Notwendigkeit in 4 Stufen: Muss / Sollte / Kann / Verzichtbar,
@@ -273,9 +275,10 @@ Neues Projekt, es gibt keine Bestandsdaten. Entitäten:
 | `profile` | id (Auth-User), household_id, display_name |
 | `account` | household_id, name, type (`giro` \| `credit_card`), iban (nur für die Erkennung von Umbuchungen, verlässt nie den Server) |
 | `import` | account_id, period_from, period_to, opening_balance?, closing_balance?, source (`upload` \| `fints` \| `enable_banking`), created_by |
-| `transaction` | account_id, import_id, booking_date, booking_status (`booked` \| `pending`), amount_cents, counterparty, purpose, creditor_id, mandate_reference, dedupe_hash, kind (`expense` \| `income` \| `transfer` \| `card_settlement` \| `refund`), refund_of, category_id, necessity (`must` \| `should` \| `could` \| `dispensable`), urgency (`immediate` \| `could_wait` \| `impulse`), ai_reason, review_status (`suggested` \| `confirmed` \| `unrated`), contract_id, updated_by |
+| `transaction` | account_id, import_id, booking_date, booking_status (`booked` \| `pending`), amount_cents, counterparty, purpose, creditor_id, mandate_reference, dedupe_hash, kind (`expense` \| `income` \| `transfer` \| `card_settlement` \| `refund`), refund_of, category_id, necessity (`must` \| `should` \| `could` \| `dispensable`), urgency (`immediate` \| `could_wait` \| `impulse`), ai_reason, review_status (`suggested` \| `confirmed` \| `unrated`), rating_source (`rule` \| `ai` \| `manual`), contract_id, updated_by |
 | `category` | household_id, name, is_default |
-| `merchant_rule` | household_id, counterparty_pattern, category_id, necessity, urgency, kind, created_by |
+| `merchant_rule` | household_id, counterparty_key (normalisiert), counterparty_label, kind (`expense` \| `income`), category_id, necessity, urgency, created_by, updated_by. Eindeutig je Gegenpartei und Art (Entscheidung 55) |
+| `private_name` | household_id, name, created_by: Namen, die vor jedem KI-Aufruf entfernt werden |
 | `contract` | household_id, name, contract_type, creditor_id?, mandate_reference?, counterparty_pattern, category_id, notice_period_months, interval (`monthly` \| `quarterly` \| `yearly`), amount_cents, monthly_cents, end_date?, status (`active` \| `cancelled` \| `terminate_now`), cancelled_effective_date?, suggested_action (`cancel` \| `switch` \| `negotiate` \| `keep`), savings_per_year_cents, ai_reason, updated_by |
 | `income_source` | household_id, name, amount_cents, interval, origin (`detected` \| `manual`) |
 | `tariff_search` | contract_id, created_at, offers (Anbieter, Preis, Link), created_by |
@@ -377,8 +380,9 @@ weil Wartung, Backups und der Zugriff von unterwegs zu aufwendig wären.
   - `.env.example`, Secret-Check (gitleaks-Hook, Push Protection)
   - `README.md` und `CLAUDE.md`
   - synthetische Fixtures aus `fixtures/private/`
-- **Etappe 2 – KI-Bewertung** · offen · R8–R12, R22 (Filter): Kategorien, Notwendigkeit,
-  Dringlichkeit, „Zu prüfen“, Regeln. Lässt sich mit den Daten aus Etappe 1 testen.
+- **Etappe 2 – KI-Bewertung** · umgesetzt · 2026-11-19 · etappe-2-ki-bewertung · R8–R12, R22
+  (Filter und Monatsübersicht nach Kategorien): Kategorien, Notwendigkeit, Dringlichkeit,
+  „Zu prüfen“, Regeln. Lässt sich mit den Daten aus Etappe 1 testen.
 - **Etappe 3 – Fixkosten-Cockpit** · offen · R13–R19, R21, R23: Verträge, Status, Warnungen,
   KI-Aktionen, Einnahmen, Cockpit, Hilfe. Ab hier wird das Erfolgskriterium messbar.
 - **Etappe 4 – Tarifvergleich** · offen · R20: Websuche pro Vertrag.
@@ -463,6 +467,18 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | 44 | Gebuchte Umsätze kommen als eine CAMT-Datei pro Tag | Import nimmt mehrere Dateien oder die ZIP an und führt sie zu einer Vorschau zusammen. Saldo-Prüfung vom Anfangssaldo des ersten bis zum Endsaldo des letzten Tages | Echter Sparkassen-Export; die Tagesdateien enthalten Salden, ein fehlender Tag fällt als Differenz auf |
 | 45 | Erkennung mit echten Daten geprüft (F2) | Echter Export 24.08.–19.11.: alle 3 Kartenabrechnungen auf dem Girokonto als Sammelabbuchung erkannt, 2 Erstattungen plausibel | Regeln aus Entscheidung 37 und 38 bleiben unverändert |
 | 46 | KI-Anbieter (ersetzt Entscheidung 2 beim Anbieter) | Google Gemini API, kostenlose Stufe, eigenes Projekt in AI Studio. Pseudonymisierung (R8) unverändert | Kein Anthropic-Konto, Start ohne Kosten. Bewusst in Kauf genommen: In der kostenlosen Stufe darf Google die pseudonymisierten Eingaben (Händler, Betrag, Datum, bereinigter Text) zur Produktverbesserung nutzen. Wechsel zur bezahlten Stufe jederzeit per „Abrechnung einrichten“ |
+| 47 | Wann bewertet die KI? | Nach „Übernehmen“ im Hintergrund (`after()`): erst Regeln, dann die KI in Paketen zu 40, höchstens 3 Pakete pro Lauf, gespeichert wird nach jedem Paket. Der Rest bleibt unbewertet, „Jetzt bewerten“ unter „Zu prüfen“ holt ihn nach | Import wartet nicht auf die KI, Ratenlimits und Zeitlimit von Vercel bleiben eingehalten |
+| 48 | Wer ist Privatperson (R8)? | Im Zweifel Person. Firma ist: Kartenumsatz, Lastschrift mit Gläubiger-ID oder Rechtsform/Einrichtung im Namen (GmbH, AG, e.V., Sparkasse, Finanzamt …), keine mehrdeutigen Kürzel (AB, SA, Co). Bei „PAYPAL *Name“ auf der Karte wird der Teil nach dem Stern entfernt. IBANs (auch klein und in Blöcken), Nummern ab 6 Ziffern (auch mit Leerzeichen) und E-Mails gehen nie raus | Lieber eine schlechtere Bewertung als ein Name bei Google |
+| 49 | Was wird bewertet? | Nur Ausgaben. Einnahmen, Umbuchungen, Sammelabbuchungen und Erstattungen bekommen keine Kategorie und stehen nicht unter „Zu prüfen“. Erstattungen ohne passende Ausgabe erkennt der Import bereits als Einnahme | Notwendigkeit und Dringlichkeit ergeben nur bei Ausgaben Sinn |
+| 50 | Regeln (R11) | Jede Korrektur legt eine Regel für die Gegenpartei an oder ändert sie und wirkt sofort auf alle nicht bestätigten Buchungen. Per Regel bewertete Buchungen gelten als bestätigt. „Stimmt“ erzeugt keine Regel. Regeln greifen nie bei Umbuchungen und Sammelabbuchungen | Die App lernt sofort, ohne bestätigte Entscheidungen umzuwerfen |
+| 51 | Wo wird geprüft? | Eigene Seite „Zu prüfen“ mit Anzahl in der Navigation, je Buchung „Stimmt“ und „Ändern“, ohne „Alle bestätigen“. Bewerten lässt sich auch direkt in der Buchungsliste | Jeder Vorschlag wird einmal angesehen |
+| 52 | Monatsübersicht nach Kategorien (R22) | Schlicht in „Buchungen“: Summe je Kategorie für Monat und Konto, Erstattungen bei der erstatteten Ausgabe abgezogen, Klick setzt den Filter | Braucht die Kategorien aus dieser Etappe, kein Diagramm nötig |
+| 53 | Regeln bei Zahlungsdiensten | PayPal, Klarna, Amazon Payments u. ä. bekommen keine Regel. Eine Korrektur gilt nur für die eine Buchung | Hinter einem Zahlungsdienst stehen viele Händler |
+| 54 | Namen im Freitext | Liste „Namen, die nie an die KI gehen“ in den Einstellungen, zusätzlich zu den Anzeigenamen der Logins | Volle Namen stehen oft im Verwendungszweck |
+| 55 | Steuererstattung (F4) | Regeln gelten je Richtung: eine Ausgabenregel nur für Abflüsse, eine Einnahmenregel nur für Zuflüsse, beide können für dieselbe Gegenpartei bestehen. „Erstattung → Einnahme“ beim Finanzamt trifft die nächste Steuerzahlung nicht. Abflüsse sind immer Ausgaben, eine Erstattung kann zur Einnahme werden | Korrektur per Regel ohne Nebenwirkung auf die Gegenrichtung |
+| 56 | Kategorien (R12) | Die 15 Startkategorien sind fest, auch per RLS. Eigene lassen sich anlegen, umbenennen und löschen. Gelöschte Kategorie: deren Buchungen werden wieder unbewertet | Vergleichbarkeit, nichts verschwindet still |
+| 57 | Vorgemerkt → gebucht (R7a) | Bewertung bleibt. Eine von Hand oder per Regel geänderte Art bleibt ebenfalls | Sonst würde eine Korrektur beim Buchen zurückgedreht |
+| 58 | KI-Modell | `gemini-3.5-flash-lite` als Standard, per `GEMINI_MODEL` änderbar. 25 s Timeout, höchstens 2 Versuche | Im Test schnell und stabil, die größeren Flash-Modelle waren überlastet (503/504) |
 
 ## Offene Punkte
 
@@ -470,7 +486,11 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | --- | --- | --- | --- |
 | F1 | Import löschen macht Folgen nicht rückgängig: per Karte umgestufte Giro-Abbuchungen bleiben Sammelabbuchung, ersetzte Vormerkungen gehören dem neuen Import, überlappende Buchungen dem ersten. Soll Löschen das zurückdrehen? | Alessandro | – |
 | F3 | Fehlertexte in Produktion: Next ersetzt Server-Fehlermeldungen, der Hinweis „kein Haushalt zugeordnet“ erreicht den User nicht | – | – |
-| F4 | Steuererstattung nach Steuerzahlung an dieselbe Stelle wird als Erstattung statt Einnahme erkannt. In Etappe 2 per Regel korrigierbar? | – | – |
 | F5 | IBAN entfernen oder ändern macht die daraus erkannten Umbuchungen nicht rückgängig | – | – |
 | F6 | Übernehmen beide gleichzeitig dieselbe Datei, kann der Import an `refund_of` scheitern und muss wiederholt werden | – | – |
+| F7 | Fremde Personennamen im Verwendungszweck von Firmenbuchungen („Mieter Lukas Huber“) erkennt die Pseudonymisierung nicht, nur Namen der Namensliste. Reicht das? | Alessandro | – |
+| F8 | Ohne Gegenpartei bilden die ersten vier Wörter des Verwendungszwecks den Regelschlüssel. Das kann zu breit greifen | – | – |
+| F9 | „Übernehmen“ und „Jetzt bewerten“ gleichzeitig schicken dieselben Buchungen zweimal an die KI. Falsch wird nichts, es kostet nur Kontingent | – | – |
+| F10 | Bewertung speichern ist nicht atomar: Scheitert das Anlegen der Regel, ist die Buchung trotzdem bestätigt (Meldung „Speichern fehlgeschlagen“) | – | – |
+| F11 | Kein automatischer Test für AK15 mit Bewertung (vorgemerkt → gebucht behält die Bewertung), gesichert nur über das RPC, das die Spalten nicht anfasst | – | – |
 | O2 | FinTS-Produkt-ID beantragen: Formular von fints.org/de/hersteller/produktregistrierung ausfüllen (Produktname, Version, Hersteller = dein Name, Produkttyp „Privatanwender-Software“/Webserver-Anwendung) und an registrierung@hbci-zka.de senden. Antwort in 10–15 Werktagen. Ablauf und Formularwerte: [Plan O2](../plans/o2-fints-produktregistrierung.md). Wird sie abgelehnt, gilt der Fallback Enable Banking. | Alessandro | Etappe 5 |

@@ -23,6 +23,9 @@ Pläne unter `docs/plans/`.
 - Import-Pipeline in `src/lib/import/`: Adapter je Dateiformat (`adapters/`), `preview.ts` als
   reine Funktion für Duplikate, vorgemerkt→gebucht und Arten. Gespeichert wird atomar per RPC
   `commit_import`. Neues Format = neuer Adapter in `adapters/index.ts`.
+- KI-Bewertung in `src/lib/rating/`: `rateTransactions` (rein, erst Regeln, dann KI) bekommt
+  den Provider injiziert (`RatingProvider`, Gemini in `gemini.ts`). Alles, was an die KI geht,
+  läuft durch `buildRatingRequest` (Pseudonymisierung, R8). Keine anderen Felder an die KI geben.
 - UI: shadcn/ui (Base UI, nicht Radix: `render`-Prop statt `asChild`).
 
 ## Datenbank
@@ -35,7 +38,7 @@ Pläne unter `docs/plans/`.
 ## Checks
 
 `npm run check` (Typecheck, Lint, Vitest) und `npm run build` müssen grün sein. Logik wird an
-den öffentlichen Funktionen getestet (`parseStatement`, `buildImportPreview`, `sumTransactions`).
+den öffentlichen Funktionen getestet (`parseStatement`, `buildImportPreview`, `sumTransactions`, `rateTransactions`).
 
 ## Öffentliches Repo
 

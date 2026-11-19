@@ -27,7 +27,8 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL` | `.env.local`, Vercel | Projekt-URL, darf öffentlich sein |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env.local`, Vercel | `sb_publishable_…`, darf öffentlich sein, RLS schützt die Daten |
 | `SUPABASE_SECRET_KEY` | nur `.env.local` | `sb_secret_…`, nur für `npm run create-user`. Nie committen, nicht bei Vercel |
-| `GEMINI_API_KEY` | ab Etappe 2, `.env.local` und Vercel (Secret) | Google AI Studio, nur serverseitig. Nie committen |
+| `GEMINI_API_KEY` | `.env.local`, Vercel (Secret) | Google AI Studio, nur serverseitig. Nie committen. Fehlt er, bleiben neue Ausgaben unbewertet unter „Zu prüfen“ |
+| `GEMINI_MODEL` | optional, `.env.local`, Vercel | Gemini-Modell für die Bewertung, Standard `gemini-3.5-flash-lite` |
 
 Secrets liegen nur in `.env.local` (gitignored) und in den Umgebungsvariablen von Vercel.
 
@@ -62,7 +63,8 @@ Datenbank, nie über Dateien im Repo.
 ## Deploy (Vercel)
 
 1. Repository in Vercel importieren (Framework: Next.js).
-2. `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` als Umgebungsvariablen setzen.
+2. `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` als Umgebungsvariablen setzen,
+   dazu `GEMINI_API_KEY` als Secret (optional `GEMINI_MODEL`).
 3. In Supabase unter Authentication → URL Configuration die Vercel-URL als Site URL eintragen.
 
 Deployt wird aus `main`.
