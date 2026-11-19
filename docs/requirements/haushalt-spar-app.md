@@ -467,5 +467,5 @@ eine gespeicherte PIN und ist deshalb bewusst ausgeschlossen).
 | F4 | Steuererstattung nach Steuerzahlung an dieselbe Stelle wird als Erstattung statt Einnahme erkannt. In Etappe 2 per Regel korrigierbar? | – | – |
 | F5 | IBAN entfernen oder ändern macht die daraus erkannten Umbuchungen nicht rückgängig | – | – |
 | F6 | Übernehmen beide gleichzeitig dieselbe Datei, kann der Import an `refund_of` scheitern und muss wiederholt werden | – | – |
-| F7 | Vercel-Deploy und GitHub-Repo (public, Push Protection) stehen noch aus: Repo nach OK anlegen, Vercel verknüpft Alessandro | Alessandro | – |
+| F7 | Vercel-Deploy steht noch aus: Repo github.com/fuggerstadt1907/haushalt-spar-app in Vercel importieren, Env-Variablen setzen, Site URL in Supabase eintragen (README, „Deploy“). Repo ist public, Secret Scanning und Push Protection sind aktiv | Alessandro | – |
 | O2 | FinTS-Produkt-ID beantragen: Formular von fints.org/de/hersteller/produktregistrierung ausfüllen (Produktname, Version, Hersteller = dein Name, Produkttyp „Privatanwender-Software“/Webserver-Anwendung) und an registrierung@hbci-zka.de senden. Antwort in 10–15 Werktagen. Ablauf und Formularwerte: [Plan O2](../plans/o2-fints-produktregistrierung.md). Wird sie abgelehnt, gilt der Fallback Enable Banking. | Alessandro | Etappe 5 |
